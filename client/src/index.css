@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-grow-darker text-grow-white font-mono;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0e0a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1a2e1a;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2a4e2a;
+  }
+}
+
+@layer components {
+  .card-grow {
+    @apply bg-grow-panel border border-grow-border rounded-lg shadow-grow;
+  }
+
+  .btn-primary {
+    @apply bg-grow-green text-grow-darker font-bold px-4 py-2 rounded-lg 
+           hover:bg-grow-green-bright transition-all duration-200 
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply bg-red-900/50 text-red-400 border border-red-800 px-4 py-2 rounded-lg
+           hover:bg-red-800/50 transition-all duration-200 active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply text-grow-muted hover:text-grow-white px-3 py-2 rounded-lg
+           hover:bg-grow-border/50 transition-all duration-200;
+  }
+
+  .progress-bar {
+    @apply h-2 rounded-full bg-grow-border overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-500;
+  }
+
+  .stat-label {
+    @apply text-grow-muted text-xs uppercase tracking-wider;
+  }
+
+  .stat-value {
+    @apply text-grow-white font-bold;
+  }
+
+  .badge {
+    @apply text-xs px-2 py-0.5 rounded-full font-semibold;
+  }
+
+  .badge-green {
+    @apply bg-grow-green/20 text-grow-green;
+  }
+
+  .badge-purple {
+    @apply bg-grow-purple/20 text-grow-purple;
+  }
+
+  .badge-gold {
+    @apply bg-grow-gold/20 text-grow-gold;
+  }
+
+  .badge-red {
+    @apply bg-grow-red/20 text-grow-red;
+  }
+}
+
+@layer utilities {
+  .text-shadow-glow {
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+  }
+
+  .text-shadow-gold {
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+  }
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  animation: particleFloat 4s ease-in infinite;
+  pointer-events: none;
+}

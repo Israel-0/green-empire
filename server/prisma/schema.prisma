@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  gameState GameState?
+}
+
+model GameState {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id])
+  money            Float    @default(50)
+  level            Int      @default(1)
+  experience       Float    @default(0)
+  experienceToNext Float    @default(100)
+  reputation       Float    @default(0)
+  totalHarvested   Int      @default(0)
+  totalSold        Float    @default(0)
+  activeGrowSpaceId String?
+  unlockedDrugTypes String  @default("[\"marijuana\"]")
+  seedInventory     String  @default("{}")
+  lastDealerSell    DateTime?
+  lastSalaryPaid    DateTime?
+  autoPlantEnabled  Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  growSpaces   GrowSpace[]
+  plants       Plant[]
+  inventory    InventoryItem[]
+  staff        StaffMember[]
+  transactions Transaction[]
+  events       GameEvent[]
+  achievements Achievement[]
+}
+
+model GrowSpace {
+  id           String   @id @default(uuid())
+  gameId       String
+  game         GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  name         String
+  level        Int      @default(1)
+  capacity     Int      @default(2)
+  drugType     String   @default("marijuana")
+  lights       Int      @default(1)
+  ventilation  Int      @default(1)
+  irrigation   Int      @default(1)
+  security     Int      @default(1)
+  unlocked     Boolean  @default(true)
+
+  plants Plant[]
+  staff  StaffMember[]
+}
+
+model Plant {
+  id                String    @id @default(uuid())
+  gameId            String
+  game              GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  growSpaceId       String
+  growSpace         GrowSpace @relation(fields: [growSpaceId], references: [id], onDelete: Cascade)
+  strainId          String
+  strain            Strain    @relation(fields: [strainId], references: [id])
+  plantedAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
+  lastCaredAt       DateTime?
+  stage             String    @default("seed")
+  stageProgress     Float     @default(0)
+  waterLevel        Float     @default(100)
+  lightLevel        Float     @default(100)
+  nutrientLevel     Float     @default(100)
+  health            Float     @default(100)
+  quality           Float     @default(0)
+  isYerbon          Boolean   @default(false)
+  isMoldy           Boolean   @default(false)
+  hasPests          Boolean   @default(false)
+  harvestedAt       DateTime?
+  slot              Int
+  waterDecayRate    Float     @default(1.0)
+  lightDecayRate    Float     @default(1.0)
+  nutrientDecayRate Float     @default(1.0)
+}
+
+model Strain {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  drugType        String
+  growTimeMinutes Int
+  baseValue       Float
+  baseYield       Float
+  difficulty      Int
+  unlockLevel     Int
+  description     String
+  specialTrait    String
+  idealWater      Float    @default(70)
+  idealLight      Float    @default(80)
+  idealNutrients  Float    @default(70)
+  seedCost        Float    @default(10)
+  substrate       String?
+  icon            String   @default("🌿")
+  color           String   @default("#4ade80")
+
+  plants         Plant[]
+  inventoryItems InventoryItem[]
+  marketPrices   MarketPrice[]
+}
+
+model InventoryItem {
+  id             String   @id @default(uuid())
+  gameId         String
+  game           GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  strainId       String
+  strain         Strain   @relation(fields: [strainId], references: [id])
+  quantity       Int      @default(0)
+  averageQuality Float    @default(0)
+  tier           Int      @default(3)
+  isYerbon       Boolean  @default(false)
+}
+
+model StaffMember {
+  id                  String    @id @default(uuid())
+  gameId              String
+  game                GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  type                String
+  name                String
+  level               Int       @default(1)
+  salary              Float     @default(10)
+  hiredAt             DateTime  @default(now())
+  assignedGrowSpaceId String?
+  growSpace           GrowSpace? @relation(fields: [assignedGrowSpaceId], references: [id])
+}
+
+model MarketPrice {
+  id            String   @id @default(uuid())
+  strainId      String   @unique
+  strain        Strain   @relation(fields: [strainId], references: [id])
+  currentPrice  Float    @default(0)
+  basePrice     Float    @default(0)
+  volatility    Float    @default(0.1)
+  trend         String   @default("stable")
+  changePercent Float    @default(0)
+  updatedAt     DateTime @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  gameId      String
+  game        GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  type        String
+  amount      Float
+  description String
+  createdAt   DateTime @default(now())
+}
+
+model GameEvent {
+  id        String   @id @default(uuid())
+  gameId    String
+  game      GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  type      String
+  message   String
+  severity  String   @default("info")
+  resolved  Boolean  @default(false)
+  plantId   String?
+  strainId  String?
+  reward    Float?
+  penalty   Float?
+  createdAt DateTime @default(now())
+}
+
+model Achievement {
+  id          String    @id @default(uuid())
+  gameId      String
+  game        GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  name        String
+  description String
+  icon        String    @default("🏆")
+  unlocked    Boolean   @default(false)
+  unlockedAt  DateTime?
+  progress    Float     @default(0)
+  maxProgress Float     @default(1)
+}
