@@ -173,6 +173,8 @@ export default function StatsPanel() {
   const bestLights = Math.max(1, ...gameState.growSpaces.map(gs => gs.lights));
   const LIGHTS_SPEED = [0, 10, 30, 60, 100];
   const growSpeed = LIGHTS_SPEED[Math.min(bestLights, 5) - 1] || 0;
+  const levelSpeed = (gameState?.level || 1);
+  const totalSpeed = growSpeed + levelSpeed;
   const bestSecurity = Math.max(1, ...gameState.growSpaces.map(gs => gs.security));
   const SEC_REDUCTION = [0, 5, 12, 25, 40];
   const riskReduction = SEC_REDUCTION[Math.min(bestSecurity, 5) - 1] || 0;
@@ -249,7 +251,7 @@ export default function StatsPanel() {
           <span className="text-2xl">⚡</span>
           <div>
             <p className="text-xs text-grow-muted">Velocidad</p>
-            <p className="text-base font-bold text-grow-gold">+{growSpeed}%</p>
+            <p className="text-base font-bold text-grow-gold">+{totalSpeed}%</p>
           </div>
         </div>
         <div className="card-grow p-4 flex items-center gap-3">

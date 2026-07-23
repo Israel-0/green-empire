@@ -212,7 +212,7 @@ router.post('/:id/harvest', async (req: AuthRequest, res: Response) => {
     const gardener = gameState.staff.find(s => s.type === 'grower' && s.assignedGrowSpaceId === plant.growSpaceId);
     const gardenerLevel = gardener?.level || 0;
 
-    const growth = calculatePlantGrowth(plant, plant.strain, equipment, researcherLevel, gardenerLevel);
+    const growth = calculatePlantGrowth(plant, plant.strain, equipment, researcherLevel, gardenerLevel, gameState.level);
     if (growth.stage !== 'ready') {
       return res.status(400).json({ success: false, error: `La planta aún no está lista (${growth.stage})` });
     }
@@ -262,7 +262,7 @@ router.post('/:id/harvest', async (req: AuthRequest, res: Response) => {
 
     while (newExp >= nextExp) {
       newLevel++;
-      nextExp = Math.floor(nextExp * 1.5);
+      nextExp = Math.ceil(100 * Math.pow(newLevel, 1.3));
     }
 
     await prisma.gameState.update({

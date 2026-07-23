@@ -56,6 +56,9 @@ export default function PlantGrid() {
               💡 +{[0, 10, 30, 60, 100][activeSpace.lights - 1]}% velocidad
             </span>
           )}
+          <span className="badge badge-purple flex items-center gap-1">
+            📈 +{gameState.level}% velocidad (nivel)
+          </span>
           {activeSpace.irrigation > 1 && (
             <span className="badge badge-green flex items-center gap-1">
               💧 -{[0, 15, 30, 50, 75][activeSpace.irrigation - 1]}% decay

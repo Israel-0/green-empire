@@ -5,8 +5,8 @@ import { formatTime, qualityColor, qualityLabel, getQualityTier } from '../../ut
 import { sounds } from '../../utils/sounds';
 import ProgressBar from '../ui/ProgressBar';
 import Timer from '../ui/Timer';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useCallback } from 'react';
 
 interface PlantCardProps {
   plant: Plant;
@@ -19,6 +19,17 @@ export default function PlantCard({ plant }: PlantCardProps) {
   const treatPlant = useGameStore((s) => s.treatPlant);
   const deletePlant = useGameStore((s) => s.deletePlant);
   const [careEffect, setCareEffect] = useState(false);
+  const [harvestResult, setHarvestResult] = useState<{
+    show: boolean;
+    yieldCount: number;
+    quality: number;
+    strainName: string;
+    tierName: string;
+    tierEmoji: string;
+    isYerbon: boolean;
+    expGain: number;
+    newLevel: number;
+  } | null>(null);
 
   const strain = plant.strain;
   if (!strain || !gameState) return null;
@@ -58,14 +69,27 @@ export default function PlantCard({ plant }: PlantCardProps) {
     sounds.harvest();
     const result = await harvestPlant(plant.id);
     if (result) {
-      if (tier.tier >= 7) {
+      const harvestedTier = getQualityTier(result.quality);
+      const isLegendary = harvestedTier.tier >= 7;
+      if (isLegendary) {
         sounds.yerbon();
         setTimeout(() => sounds.yerbon(), 800);
       }
       if (result.newLevel && result.newLevel > 0) {
         sounds.levelUp();
       }
-      alert(`Cosechado! ${result.yield}x ${strain.name} - ${tier.emoji} ${tier.name} (${result.quality?.toFixed(1)}%)`);
+      setHarvestResult({
+        show: true,
+        yieldCount: result.yield,
+        quality: result.quality,
+        strainName: strain.name,
+        tierName: harvestedTier.name,
+        tierEmoji: harvestedTier.emoji,
+        isYerbon: result.isYerbon,
+        expGain: result.expGain || 0,
+        newLevel: result.newLevel || 0,
+      });
+      setTimeout(() => setHarvestResult(null), 3000);
     }
   };
 
@@ -243,6 +267,94 @@ export default function PlantCard({ plant }: PlantCardProps) {
           </motion.button>
         )}
       </div>
+
+      <AnimatePresence>
+        {harvestResult?.show && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 1.1, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className={`absolute inset-0 flex flex-col items-center justify-center rounded-xl z-30 pointer-events-none ${
+              harvestResult.isYerbon
+                ? 'bg-gradient-to-b from-yellow-900/90 to-black/90'
+                : 'bg-grow-darker/95'
+            }`}
+          >
+            {harvestResult.isYerbon && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1.5, rotate: 45 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                  className="absolute text-5xl"
+                  style={{ top: '15%', left: '10%' }}
+                >✨</motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1.5, rotate: -30 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  className="absolute text-4xl"
+                  style={{ top: '20%', right: '15%' }}
+                >✨</motion.div>
+              </>
+            )}
+            <motion.span
+              initial={{ y: -10 }}
+              animate={{ y: 0 }}
+              className={`text-2xl mb-1 ${harvestResult.isYerbon ? 'text-yellow-300' : 'text-grow-amber'}`}
+            >
+              ✂️
+            </motion.span>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className={`text-lg font-bold ${harvestResult.isYerbon ? 'text-yellow-300' : 'text-grow-white'}`}
+            >
+              +{harvestResult.yieldCount}x {harvestResult.strainName}
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className={`text-sm ${harvestResult.isYerbon ? 'text-yellow-400' : 'text-grow-green'}`}
+            >
+              {harvestResult.tierEmoji} {harvestResult.tierName} ({harvestResult.quality.toFixed(0)}%)
+            </motion.p>
+            {harvestResult.isYerbon && (
+              <motion.p
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, type: 'spring' }}
+                className="text-yellow-300 font-bold text-sm mt-1 tracking-widest"
+              >
+                ★ YERBON ★
+              </motion.p>
+            )}
+            {harvestResult.expGain > 0 && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="text-xs text-grow-muted mt-1"
+              >
+                +{harvestResult.expGain.toFixed(0)} EXP
+              </motion.p>
+            )}
+            {harvestResult.newLevel > 0 && (
+              <motion.p
+                initial={{ opacity: 0, y: 10, scale: 0.5 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.4, type: 'spring', stiffness: 300 }}
+                className="text-grow-purple font-bold text-sm mt-1"
+              >
+                ⬆️ ¡Nivel {harvestResult.newLevel}!
+              </motion.p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

@@ -16,35 +16,32 @@ export default function Header() {
   return (
     <header className="bg-grow-panel border-b border-grow-border px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-6">
-          <h1 className="text-xl font-display font-bold text-grow-green text-shadow-glow tracking-wide">
-            🌿 GREEN EMPIRE
-          </h1>
-        <div className="flex items-center gap-3 text-sm">
+        <h1 className="text-xl font-display font-bold text-grow-green text-shadow-glow tracking-wide">
+          🌿 GREEN EMPIRE
+        </h1>
+        <div className="flex items-center gap-4 text-sm">
           <div>
             <span className="stat-label">Dinero</span>
             <p className="stat-value text-grow-green">{formatMoney(gameState.money)}</p>
           </div>
-          <div>
-            <span className="stat-label">Nivel</span>
-            <p className="stat-value text-grow-purple">{gameState.level}</p>
-          </div>
-          <div className="w-32">
-            <span className="stat-label">EXP</span>
-            <div className="progress-bar h-1.5 mt-1">
+          <div className="w-36">
+            <span className="stat-label">Nv.{gameState.level}</span>
+            <div className="progress-bar h-2 mt-1">
               <div
                 className="progress-fill bg-grow-purple"
                 style={{ width: `${expPercent}%` }}
               />
             </div>
+            <p className="text-xs text-grow-muted mt-0.5">
+              {Math.floor(gameState.experience).toLocaleString()} / {gameState.experienceToNext.toLocaleString()}
+            </p>
           </div>
           <div>
             <span className="stat-label">Reputación</span>
             <p className="stat-value text-grow-amber flex items-center gap-1">
-              <span>
-                {'★'.repeat(Math.min(5, Math.floor(gameState.reputation / 20)))}
-                {'☆'.repeat(Math.max(0, 5 - Math.floor(gameState.reputation / 20)))}
-              </span>
-              <span className="text-grow-green text-xs">+{(gameState.reputation).toFixed(0)}% precio</span>
+              <span className="font-mono">{gameState.reputation.toFixed(1)}</span>
+              <span className="text-xs text-grow-muted">/100 rep</span>
+              <span className="text-grow-green text-xs font-bold">(+{gameState.reputation.toFixed(0)}% precio)</span>
               <AnimatePresence>
                 {lastRepGain !== null && (
                   <motion.span

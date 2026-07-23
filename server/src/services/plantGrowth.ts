@@ -81,6 +81,7 @@ export function calculatePlantGrowth(
   equipment: EquipmentLevels = { lights: 1, ventilation: 1, irrigation: 1, security: 1 },
   researcherLevel: number = 0,
   gardenerLevel: number = 0,
+  playerLevel: number = 1,
   now: Date = new Date()
 ) {
   const plantedAt = new Date(plant.plantedAt);
@@ -106,7 +107,8 @@ export function calculatePlantGrowth(
   const researcherSpeedBonus = RESEARCHER_SPEED[Math.min(researcherLevel, 5)] || 1.0;
   const GARDENER_SPEED = [1.0, 1.0, 1.1, 1.2, 1.35, 1.5];
   const gardenerSpeedBonus = GARDENER_SPEED[Math.min(gardenerLevel, 5)];
-  const totalSpeedBonus = lightsSpeedBonus * researcherSpeedBonus * gardenerSpeedBonus;
+  const levelSpeedBonus = 1 + playerLevel * 0.01;
+  const totalSpeedBonus = lightsSpeedBonus * researcherSpeedBonus * gardenerSpeedBonus * levelSpeedBonus;
   const effectiveElapsed = elapsedMinutes * totalSpeedBonus;
   const progress = Math.min(effectiveElapsed / growTime, 1.0);
 

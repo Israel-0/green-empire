@@ -89,7 +89,7 @@ router.get('/state', async (req: AuthRequest, res: Response) => {
       );
       const gardenerLevel = assignedGrower?.level || 0;
 
-      const growth = calculatePlantGrowth(plant, plant.strain, equipment, researcherLevel, gardenerLevel, now);
+      const growth = calculatePlantGrowth(plant, plant.strain, equipment, researcherLevel, gardenerLevel, gameState.level, now);
 
       const updates: Record<string, unknown> = {
         waterLevel: growth.waterLevel,
