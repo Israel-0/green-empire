@@ -68,14 +68,16 @@ const ACHIEVEMENTS: AchievementDef[] = [
     check: (s) => ({ unlocked: (s.gameState?.level || 0) >= 25, progress: s.gameState?.level || 0, max: 25 }) },
   { id: 'level_50', name: 'Leyenda', icon: '🌟', description: 'Alcanza nivel 50', category: 'Nivel',
     check: (s) => ({ unlocked: (s.gameState?.level || 0) >= 50, progress: s.gameState?.level || 0, max: 50 }) },
+  { id: 'level_100', name: 'Emperador', icon: '👑', description: 'Alcanza nivel 100', category: 'Nivel',
+    check: (s) => ({ unlocked: (s.gameState?.level || 0) >= 100, progress: s.gameState?.level || 0, max: 100 }) },
 
   // Cepas
   { id: 'strains_3', name: 'Coleccionista', icon: '🌱', description: 'Desbloquea 3 cepas', category: 'Cepas',
     check: (s) => ({ unlocked: (s.strains.filter(st => (s.gameState?.level || 0) >= st.unlockLevel).length) >= 3, progress: s.strains.filter(st => (s.gameState?.level || 0) >= st.unlockLevel).length, max: 3 }) },
   { id: 'strains_5', name: 'Botanico', icon: '🌿', description: 'Desbloquea 5 cepas', category: 'Cepas',
     check: (s) => ({ unlocked: (s.strains.filter(st => (s.gameState?.level || 0) >= st.unlockLevel).length) >= 5, progress: s.strains.filter(st => (s.gameState?.level || 0) >= st.unlockLevel).length, max: 5 }) },
-  { id: 'strains_7', name: 'Banco de semillas', icon: '🧬', description: 'Desbloquea las 7 cepas', category: 'Cepas',
-    check: (s) => ({ unlocked: (s.strains.filter(st => (s.gameState?.level || 0) >= st.unlockLevel).length) >= 7, progress: s.strains.filter(st => (s.gameState?.level || 0) >= st.unlockLevel).length, max: 7 }) },
+  { id: 'strains_7', name: 'Banco de semillas', icon: '🧬', description: 'Desbloquea las 11 cepas', category: 'Cepas',
+    check: (s) => ({ unlocked: (s.strains.filter(st => (s.gameState?.level || 0) >= st.unlockLevel).length) >= 11, progress: s.strains.filter(st => (s.gameState?.level || 0) >= st.unlockLevel).length, max: 11 }) },
 
   // Ventas por metodo
   { id: 'sell_local_10', name: 'Camello local', icon: '🏪', description: '10 ventas locales', category: 'Ventas',
@@ -95,8 +97,8 @@ const ACHIEVEMENTS: AchievementDef[] = [
     }},
   { id: 'staff_max', name: 'CEO', icon: '🎓', description: 'Todo el personal a nivel maximo', category: 'Personal',
     check: (s) => {
-      const allMax = (s.gameState?.staff.length || 0) >= 4 && s.gameState!.staff.every(st => st.level >= 3);
-      const maxCount = s.gameState?.staff.filter(st => st.level >= 3).length || 0;
+      const allMax = (s.gameState?.staff.length || 0) >= 4 && s.gameState!.staff.every(st => st.level >= 5);
+      const maxCount = s.gameState?.staff.filter(st => st.level >= 5).length || 0;
       return { unlocked: allMax, progress: maxCount, max: 4 };
     }},
 

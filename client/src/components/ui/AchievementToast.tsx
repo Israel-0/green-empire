@@ -27,6 +27,7 @@ const ACHIEVEMENTS: AchievementInfo[] = [
   { id: 'level_10', name: 'Experto', icon: '🎓' },
   { id: 'level_25', name: 'Maestro', icon: '🧙' },
   { id: 'level_50', name: 'Leyenda', icon: '🌟' },
+  { id: 'level_100', name: 'Emperador', icon: '👑' },
   { id: 'strains_3', name: 'Coleccionista', icon: '🌱' },
   { id: 'strains_5', name: 'Botanico', icon: '🌿' },
   { id: 'strains_7', name: 'Banco de semillas', icon: '🧬' },
@@ -82,11 +83,12 @@ function getUnlockedIds(
   if (gameState.level >= 10) ids.add('level_10');
   if (gameState.level >= 25) ids.add('level_25');
   if (gameState.level >= 50) ids.add('level_50');
+  if (gameState.level >= 100) ids.add('level_100');
 
   if (gameState.staff.length >= 1) ids.add('staff_first');
   const staffTypes = new Set(gameState.staff.map((s: any) => s.type));
   if (staffTypes.size >= 4) ids.add('staff_all');
-  if (gameState.staff.length >= 4 && gameState.staff.every((s: any) => s.level >= 3)) ids.add('staff_max');
+  if (gameState.staff.length >= 4 && gameState.staff.every((s: any) => s.level >= 5)) ids.add('staff_max');
 
   const maxSpaceLv = Math.max(1, ...gameState.growSpaces.map((gs: any) => gs.level));
   if (maxSpaceLv >= 2) ids.add('expand_first');
@@ -102,9 +104,9 @@ function getUnlockedIds(
 
   if (strains.length > 0) {
     const unlocked = strains.filter(s => gameState.level >= s.unlockLevel).length;
-    if (unlocked >= 3) ids.add('strains_3');
-    if (unlocked >= 5) ids.add('strains_5');
-    if (unlocked >= 7) ids.add('strains_7');
+      if (unlocked >= 3) ids.add('strains_3');
+      if (unlocked >= 5) ids.add('strains_5');
+      if (unlocked >= 11) ids.add('strains_7');
   }
 
   if ((sellMethodCounts['local'] || 0) >= 10) ids.add('sell_local_10');

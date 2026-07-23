@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { formatMoney, formatDuration } from '../../utils/formatting';
+import { sounds } from '../../utils/sounds';
 import { motion } from 'framer-motion';
 
 function getStrainTags(
@@ -30,6 +31,7 @@ export default function SeedShop() {
 
   const handleBuy = async () => {
     if (!selectedStrain) return;
+    sounds.buy();
     await buySeed(selectedStrain, quantity);
     setSelectedStrain(null);
     setQuantity(1);
@@ -39,7 +41,12 @@ export default function SeedShop() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-display font-bold text-grow-white">Tienda de Semillas</h2>
-        <p className="text-grow-muted text-sm mt-1">Compra semillas para cultivar</p>
+        <div className="flex items-center gap-3 mt-1">
+          <p className="text-grow-muted text-sm">Compra semillas para cultivar</p>
+          <span className="text-xs text-grow-green font-medium">
+            ({marijuanaStrains.filter(s => gameState.level >= s.unlockLevel).length}/{marijuanaStrains.length} desbloqueadas)
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -72,9 +79,9 @@ export default function SeedShop() {
               <p className="text-xs text-grow-muted text-center mb-3">{strain.description}</p>
 
               {tags.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-1 mb-3">
+                <div className="flex flex-wrap justify-center gap-1.5 mb-3">
                   {tags.map((tag) => (
-                    <span key={tag.label} className="badge badge-green text-xs flex items-center gap-0.5">
+                    <span key={tag.label} className="badge badge-green text-xs font-medium flex items-center gap-1">
                       {tag.emoji} {tag.label}
                     </span>
                   ))}

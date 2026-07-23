@@ -189,162 +189,20 @@ export default function InventoryPanel() {
             <motion.div
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="card-grow p-5"
+              className="card-grow p-5 lg:sticky lg:top-6 lg:self-start"
             >
-              <h3 className="font-display font-bold text-lg mb-4">Vender</h3>
+              <h3 className="font-display font-bold text-lg mb-3">Vender</h3>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="stat-label block mb-2">Cantidad</label>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setSellQuantity(Math.max(1, sellQuantity - 1))}
-                      className="btn-ghost text-sm px-3"
-                    >-</button>
-                    <input
-                      type="number"
-                      value={sellQuantity}
-                      onChange={(e) => setSellQuantity(Math.min(selected.quantity, Math.max(1, parseInt(e.target.value) || 1)))}
-                      className="w-20 bg-grow-darker border border-grow-border rounded-lg px-3 py-1.5 text-center text-grow-white text-sm"
-                      min={1}
-                      max={selected.quantity}
-                    />
-                    <button
-                      onClick={() => setSellQuantity(Math.min(selected.quantity, sellQuantity + 1))}
-                      className="btn-ghost text-sm px-3"
-                    >+</button>
-                    <button
-                      onClick={() => setSellQuantity(selected.quantity)}
-                      className="text-xs text-grow-muted hover:text-grow-green"
-                    >
-                      Todo ({selected.quantity})
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="stat-label block mb-2">Método de venta</label>
-                  <div className="space-y-2">
-                    {SELL_METHODS.map((m) => {
-                      const unlocked = gameState.reputation >= m.repRequired;
-                      return (
-                        <button
-                          key={m.id}
-                          onClick={() => unlocked && setSellMethod(m.id)}
-                          disabled={!unlocked}
-                          className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left text-sm transition-all ${
-                            !unlocked
-                              ? 'border-grow-border/30 bg-grow-darker opacity-50 cursor-not-allowed'
-                              : sellMethod === m.id
-                                ? 'border-grow-green bg-grow-green/10'
-                                : 'border-grow-border hover:border-grow-green/30'
-                          }`}
-                        >
-                          <span className="text-xl">{m.icon}</span>
-                          <div className="flex-1">
-                            <p className="font-medium text-grow-white">
-                              {m.label}
-                              {!unlocked && (
-                                <span className="text-grow-red text-xs ml-2">
-                                  🔒 Nv. rep {m.repRequired}
-                                </span>
-                              )}
-                            </p>
-                            <p className="text-xs text-grow-muted">
-                              x{m.multiplier} precio
-                              {maxSecurity > 1 || securityLv > 0 ? (
-                                <span> | Riesgo: <span className="text-grow-red line-through">{m.risk}%</span> <span className="text-grow-green font-bold">{calcEffectiveRisk(m.risk, maxSecurity, securityLv)}%</span></span>
-                              ) : (
-                                <span> | Riesgo: <span className="text-grow-red">{m.risk}%</span></span>
-                              )}
-                            </p>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="bg-grow-darker rounded-lg p-4 space-y-2">
-                  <div className="flex justify-between text-sm font-bold">
-                    <span className="text-grow-white">Total estimado</span>
-                    <span className="text-grow-green">{formatMoney(estimatedValue)}</span>
-                  </div>
-
-                  <div className="border-t border-grow-border/30 pt-2 space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-grow-muted">Precio base</span>
-                      <span className="text-grow-white">
-                        {formatMoney((marketPrices.find(mp => mp.strainId === selected.strainId)?.currentPrice || selected.strain?.baseValue || 0) * sellQuantity)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-grow-muted">Calidad ({(selected.averageQuality).toFixed(0)}%)</span>
-                      <span className="text-grow-white">x{(1 + (selected.averageQuality - 50) / 100).toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-grow-muted">Tier ({getQualityTier(selected.averageQuality).name})</span>
-                      <span className="text-grow-white">x{getQualityTier(selected.averageQuality).multiplier}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-grow-muted">Método ({method.label})</span>
-                      <span className="text-grow-white">x{method.multiplier}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-grow-muted">Reputación ({(gameState.reputation).toFixed(0)}%)</span>
-                      <span className="text-grow-amber font-medium">x{(1 + gameState.reputation / 100).toFixed(2)}</span>
-                    </div>
-                    {gameState.staff.filter(s => s.type === 'dealer').length > 0 && (
-                      <div className="flex justify-between text-xs">
-                        <span className="text-grow-muted">Camello Lv{gameState.staff.filter(s => s.type === 'dealer').reduce((max, s) => Math.max(max, s.level), 0)}</span>
-                        <span className="text-grow-white">x{(1 + gameState.staff.filter(s => s.type === 'dealer').reduce((max, s) => Math.max(max, s.level), 0) * 0.1).toFixed(2)}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="border-t border-grow-border/30 pt-2">
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-grow-muted">Riesgo base</span>
-                      <span className="text-grow-red">{method.risk}%</span>
-                    </div>
-                    {(maxSecurity > 1 || securityLv > 0) && (
-                      <>
-                        {maxSecurity > 1 && (
-                          <div className="flex justify-between text-xs mb-1">
-                            <span className="text-grow-muted">⚙️ Equipo seguridad Lv{maxSecurity}</span>
-                            <span className="text-grow-green">-{equipReduction} pts</span>
-                          </div>
-                        )}
-                        {securityLv > 0 && (
-                          <div className="flex justify-between text-xs mb-1">
-                            <span className="text-grow-muted">🛡️ {securityStaff?.name} Lv{securityLv}</span>
-                            <span className="text-grow-green">x{staffMultiplier}</span>
-                          </div>
-                        )}
-                        <div className="flex justify-between text-xs font-bold border-t border-grow-border/30 pt-1.5 mt-1">
-                          <span className="text-grow-white">Riesgo real</span>
-                          <span className="text-grow-green text-base">{effRisk}%</span>
-                        </div>
-                      </>
-                    )}
-                    {maxSecurity <= 1 && securityLv <= 0 && (
-                      <div className="flex justify-between text-xs font-bold border-t border-grow-border/30 pt-1.5 mt-1">
-                        <span className="text-grow-white">Riesgo real</span>
-                        <span className="text-grow-red text-base">{method.risk}%</span>
-                      </div>
-                    )}
-                    {securityLv >= 2 && (
-                      <div className="text-xs text-grow-purple mt-1">
-                        + {securityLv >= 3 ? '50%' : '25%'} de reembolso en caso de redada
-                      </div>
-                    )}
-                  </div>
+              <div className="bg-grow-green/5 border border-grow-green/20 rounded-lg p-4 mb-3">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-grow-white font-bold text-lg">Total estimado</span>
+                  <span className="text-grow-green font-bold text-xl">{formatMoney(estimatedValue)}</span>
                 </div>
 
                 <button
                   onClick={handleSell}
                   disabled={sellQuantity <= 0}
-                  className="btn-primary w-full py-2.5"
+                  className="btn-primary w-full py-3 text-base font-bold"
                 >
                   Vender por {formatMoney(estimatedValue)}
                 </button>
@@ -355,7 +213,7 @@ export default function InventoryPanel() {
                       initial={{ opacity: 0, y: 10, scale: 0.8 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="text-center py-2"
+                      className="text-center pt-3"
                     >
                       <span className="text-grow-amber font-bold text-sm">
                         ⭐ +{lastSaleRep.toFixed(1)} reputación
@@ -363,6 +221,82 @@ export default function InventoryPanel() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="stat-label block mb-1.5">Cantidad</label>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setSellQuantity(Math.max(1, sellQuantity - 1))} className="btn-ghost text-sm px-2">-</button>
+                    <input
+                      type="number" value={sellQuantity}
+                      onChange={(e) => setSellQuantity(Math.min(selected.quantity, Math.max(1, parseInt(e.target.value) || 1)))}
+                      className="w-16 bg-grow-darker border border-grow-border rounded-lg px-3 py-1.5 text-center text-grow-white text-sm"
+                      min={1} max={selected.quantity}
+                    />
+                    <button onClick={() => setSellQuantity(Math.min(selected.quantity, sellQuantity + 1))} className="btn-ghost text-sm px-2">+</button>
+                    <button onClick={() => setSellQuantity(selected.quantity)} className="text-xs text-grow-muted hover:text-grow-green">Todo ({selected.quantity})</button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="stat-label block mb-1.5">Método de venta</label>
+                  <div className="space-y-1.5">
+                    {SELL_METHODS.map((m) => {
+                      const unlocked = gameState.reputation >= m.repRequired;
+                      return (
+                        <button
+                          key={m.id}
+                          onClick={() => unlocked && setSellMethod(m.id)}
+                          disabled={!unlocked}
+                          className={`w-full flex items-center gap-2 p-2 rounded-lg border text-left text-xs transition-all ${
+                            !unlocked
+                              ? 'border-grow-border/30 bg-grow-darker opacity-50 cursor-not-allowed'
+                              : sellMethod === m.id
+                                ? 'border-grow-green bg-grow-green/10'
+                                : 'border-grow-border hover:border-grow-green/30'
+                          }`}
+                        >
+                          <span className="text-lg">{m.icon}</span>
+                          <div className="flex-1">
+                            <p className="font-medium text-grow-white text-xs">
+                              {m.label}
+                              {!unlocked && <span className="text-grow-red ml-1">🔒 rep {m.repRequired}</span>}
+                            </p>
+                            <p className="text-grow-muted">
+                              x{m.multiplier} · Riesgo: {maxSecurity > 1 || securityLv > 0 ? <span className="text-grow-green font-bold">{calcEffectiveRisk(m.risk, maxSecurity, securityLv)}%</span> : <span className="text-grow-red">{m.risk}%</span>}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <details className="bg-grow-darker rounded-lg p-3 text-xs cursor-pointer">
+                  <summary className="text-grow-muted font-medium select-none">📊 Desglose del precio</summary>
+                  <div className="space-y-1 mt-2 pt-2 border-t border-grow-border/30">
+                    <div className="flex justify-between"><span className="text-grow-muted">Precio base</span><span className="text-grow-white">{formatMoney((marketPrices.find(mp => mp.strainId === selected.strainId)?.currentPrice || selected.strain?.baseValue || 0) * sellQuantity)}</span></div>
+                    <div className="flex justify-between"><span className="text-grow-muted">Calidad ({(selected.averageQuality).toFixed(0)}%)</span><span className="text-grow-white">x{(1 + (selected.averageQuality - 50) / 100).toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span className="text-grow-muted">Tier ({getQualityTier(selected.averageQuality).name})</span><span className="text-grow-white">x{getQualityTier(selected.averageQuality).multiplier}</span></div>
+                    <div className="flex justify-between"><span className="text-grow-muted">Método ({method.label})</span><span className="text-grow-white">x{method.multiplier}</span></div>
+                    <div className="flex justify-between"><span className="text-grow-muted">Reputación ({(gameState.reputation).toFixed(0)}%)</span><span className="text-grow-amber">x{(1 + gameState.reputation / 100).toFixed(2)}</span></div>
+                    {gameState.staff.filter(s => s.type === 'dealer').length > 0 && (
+                      <div className="flex justify-between"><span className="text-grow-muted">Camello Lv{gameState.staff.filter(s => s.type === 'dealer').reduce((max, s) => Math.max(max, s.level), 0)}</span><span className="text-grow-white">x{(1 + gameState.staff.filter(s => s.type === 'dealer').reduce((max, s) => Math.max(max, s.level), 0) * 0.1).toFixed(2)}</span></div>
+                    )}
+                  </div>
+                </details>
+
+                <details className="bg-grow-darker rounded-lg p-3 text-xs cursor-pointer">
+                  <summary className="text-grow-muted font-medium select-none">🛡️ Riesgo de redada</summary>
+                  <div className="space-y-1 mt-2 pt-2 border-t border-grow-border/30">
+                    <div className="flex justify-between"><span className="text-grow-muted">Riesgo base</span><span className="text-grow-red">{method.risk}%</span></div>
+                    {maxSecurity > 1 && <div className="flex justify-between"><span className="text-grow-muted">⚙️ Equipo Lv{maxSecurity}</span><span className="text-grow-green">-{equipReduction} pts</span></div>}
+                    {securityLv > 0 && <div className="flex justify-between"><span className="text-grow-muted">🛡️ {securityStaff?.name} Lv{securityLv}</span><span className="text-grow-green">x{staffMultiplier}</span></div>}
+                    <div className="flex justify-between font-bold border-t border-grow-border/30 pt-1"><span className="text-grow-white">Riesgo real</span><span className="text-grow-green text-sm">{effRisk}%</span></div>
+                    {securityLv >= 2 && <div className="text-grow-purple mt-1">+ {securityLv >= 3 ? securityLv >= 5 ? '90%' : securityLv >= 4 ? '70%' : '50%' : '25%'} de reembolso en caso de redada</div>}
+                  </div>
+                </details>
               </div>
             </motion.div>
           )}

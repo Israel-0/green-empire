@@ -36,15 +36,15 @@ export default function PlantCard({ plant }: PlantCardProps) {
 
   const growSpace = gameState.growSpaces.find(gs => gs.id === plant.growSpaceId);
   const lightsLevel = growSpace?.lights || 1;
-  const lightsSpeedPercent = (lightsLevel - 1) * 15;
+  const lightsSpeedPercent = [0, 10, 30, 60, 100][lightsLevel - 1] || 0;
   const gardener = gameState.staff.find(s => s.type === 'grower' && s.assignedGrowSpaceId === plant.growSpaceId);
   const gardenerLevel = gardener?.level || 0;
-  const gardenerSpeedBonus = gardenerLevel >= 2 ? (gardenerLevel - 1) * 10 : 0;
+  const gardenerSpeedBonus = [0, 0, 10, 20, 35, 50][Math.min(gardenerLevel, 5)] || 0;
   const researcher = gameState.staff.find(s => s.type === 'researcher');
   const researcherLevel = researcher?.level || 0;
 
-  const remaining = calculateRemainingMinutes(plant, strain, lightsLevel, researcherLevel, gardenerLevel);
-  const progress = getStageProgress(plant, strain, lightsLevel, researcherLevel, gardenerLevel);
+  const remaining = calculateRemainingMinutes(plant, strain, lightsLevel, researcherLevel, gardenerLevel, gameState.level);
+  const progress = getStageProgress(plant, strain, lightsLevel, researcherLevel, gardenerLevel, gameState.level);
   const stageIcon = getStageIcon(plant.stage);
   const quality = plant.quality || 0;
   const isReady = plant.stage === 'ready';
@@ -105,7 +105,7 @@ export default function PlantCard({ plant }: PlantCardProps) {
       }}
       transition={{ duration: 0.3 }}
       className={`card-grow p-4 relative overflow-hidden ${
-        isReady ? 'animate-pulse-green' : ''
+        isReady ? 'animate-pulse-gold' : ''
       } ${isYerbonTier ? 'shadow-gold' : ''} ${hasPests ? 'border-red-500/70 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : ''}`}
     >
       {isYerbonTier && (
@@ -171,8 +171,8 @@ export default function PlantCard({ plant }: PlantCardProps) {
               </span>
             )}
             {researcherLevel > 0 && (
-              <span className="text-xs text-grow-gold" title={`+${researcherLevel * 3}% calidad general + ${researcherLevel * 5}% velocidad`}>
-                🔬 +{researcherLevel * 3}%🍀
+              <span className="text-xs text-grow-gold" title={`+${[0, 5, 10, 20, 35, 50][Math.min(researcherLevel, 5)]}% calidad, +${[0, 5, 10, 15, 20, 25][Math.min(researcherLevel, 5)]}% velocidad`}>
+                🔬 +{[0, 5, 10, 20, 35, 50][Math.min(researcherLevel, 5)]}%🍀
               </span>
             )}
           </div>

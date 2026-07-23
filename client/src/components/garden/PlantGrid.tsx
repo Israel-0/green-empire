@@ -17,6 +17,11 @@ export default function PlantGrid() {
 
   const activeSpace = gameState.growSpaces.find(s => s.id === gameState.activeGrowSpaceId) || gameState.growSpaces[0];
   const spacePlants = gameState.plants.filter(p => p.growSpaceId === activeSpace?.id && !p.harvestedAt);
+  const sortedPlants = [...spacePlants].sort((a, b) => {
+    if (a.stage === 'ready' && b.stage !== 'ready') return -1;
+    if (a.stage !== 'ready' && b.stage === 'ready') return 1;
+    return 0;
+  });
   const capacity = activeSpace?.capacity || 2;
   const emptySlots = capacity - spacePlants.length;
   const seedInv = gameState.seedInventory || {};
@@ -90,7 +95,7 @@ export default function PlantGrid() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {spacePlants.map((plant) => (
+        {sortedPlants.map((plant) => (
           <PlantCard key={plant.id} plant={plant} />
         ))}
 
