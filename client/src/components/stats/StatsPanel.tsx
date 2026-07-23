@@ -225,7 +225,7 @@ export default function StatsPanel() {
           <span className="text-2xl">🌱</span>
           <div>
             <p className="text-xs text-grow-muted">Cepas</p>
-            <p className="text-base font-bold text-grow-white">{unlockedStrains}<span className="text-grow-muted text-sm">/7</span></p>
+            <p className="text-base font-bold text-grow-white">{unlockedStrains}<span className="text-grow-muted text-sm">/11</span></p>
           </div>
         </div>
         <div className="card-grow p-4 flex items-center gap-3">

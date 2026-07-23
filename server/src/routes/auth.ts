@@ -12,8 +12,8 @@ router.post('/register', async (req, res: Response) => {
   try {
     const { username, email, password } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ success: false, error: 'Todos los campos son obligatorios' });
+    if (!username || !password) {
+      return res.status(400).json({ success: false, error: 'Usuario y contraseña son obligatorios' });
     }
 
     if (password.length < 6) {
@@ -21,11 +21,11 @@ router.post('/register', async (req, res: Response) => {
     }
 
     const existingUser = await prisma.user.findFirst({
-      where: { OR: [{ username }, { email }] },
+      where: { username },
     });
 
     if (existingUser) {
-      return res.status(400).json({ success: false, error: 'Usuario o email ya registrado' });
+      return res.status(400).json({ success: false, error: 'Usuario ya registrado' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,7 +33,7 @@ router.post('/register', async (req, res: Response) => {
     const user = await prisma.user.create({
       data: {
         username,
-        email,
+        email: email || `${username}@greenempire.local`,
         password: hashedPassword,
         gameState: {
           create: {

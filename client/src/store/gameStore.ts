@@ -28,7 +28,7 @@ interface GameStore {
   newAchievement: { name: string; icon: string } | null;
 
   login: (username: string, password: string) => Promise<boolean>;
-  register: (username: string, email: string, password: string) => Promise<boolean>;
+  register: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   loadGame: () => Promise<void>;
   silentRefresh: () => Promise<void>;
@@ -105,10 +105,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
   },
 
-  register: async (username, email, password) => {
+  register: async (username, password) => {
     set({ loading: true, error: null });
     try {
-      const res = await api.post<ApiResponse<{ user: any; token: string }>>('/auth/register', { username, email, password });
+      const res = await api.post<ApiResponse<{ user: any; token: string }>>('/auth/register', { username, password });
       if (res.data.success && res.data.data) {
         localStorage.setItem('token', res.data.data.token);
         set({ token: res.data.data.token, user: res.data.data.user, loading: false });

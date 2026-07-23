@@ -144,15 +144,22 @@ green-empire/
 
 ---
 
-## 🚢 Production Deployment (Railway)
+## 🚢 Deploy to Railway
 
-1. Push to GitHub
-2. Create new Railway project from repo
-3. Set environment variables from `.env.example`
-4. Build command: `npm -w client run build`
-5. Start command: `npm run db:migrate:prod && npm run db:seed && npm start`
+1. Push this repo to GitHub
+2. Go to [Railway](https://railway.app) → New Project → Deploy from GitHub → select your repo
+3. Add a **volume** — mount path `/data`, 1 GB (for SQLite persistence)
+4. Set these environment variables in Railway:
+   ```
+   NODE_ENV=production
+   JWT_SECRET=<generate a long random string>
+   PORT=3001
+   ```
+5. **Build command:** `npm install && npm -w client run build`
+6. **Start command:** `npx prisma generate && npx prisma migrate deploy && npm run db:seed && npm start`
+7. Deploy! Your game is live at the Railway URL 🎉
 
-Railway supports SQLite with persistent volumes out of the box. For PostgreSQL, swap the datasource in `prisma/schema.prisma`.
+> Railway supports SQLite with persistent volumes. No PostgreSQL needed. The `DATABASE_URL` defaults to `file:./data/prod.db` — the volume at `/data` ensures data survives restarts.
 
 ---
 

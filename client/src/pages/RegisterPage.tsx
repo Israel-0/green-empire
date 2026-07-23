@@ -37,7 +37,6 @@ function FloatingParticles() {
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
@@ -61,7 +60,7 @@ export default function RegisterPage() {
       return;
     }
 
-    const success = await register(username, email, password);
+    const success = await register(username, password);
     if (success) navigate('/game');
   };
 
@@ -106,18 +105,6 @@ export default function RegisterPage() {
                          focus:outline-none focus:border-grow-green focus:ring-2 focus:ring-grow-green/20 transition-all
                          placeholder:text-grow-muted/40"
               placeholder="Elige un nombre" autoComplete="username"
-            />
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}>
-            <label className="stat-label block mb-1.5">Email</label>
-            <input
-              type="email" value={email}
-              onChange={(e) => { setEmail(e.target.value); setError(null); }}
-              className="w-full bg-grow-darker border border-grow-border rounded-lg px-4 py-3 text-grow-white
-                         focus:outline-none focus:border-grow-green focus:ring-2 focus:ring-grow-green/20 transition-all
-                         placeholder:text-grow-muted/40"
-              placeholder="tu@email.com" autoComplete="email"
             />
           </motion.div>
 
